@@ -3,8 +3,6 @@ name: Smart Tests Demo
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 env:
   SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_TOKEN }}
@@ -12,19 +10,27 @@ env:
 
 jobs:
   example-jest-unit-tests:
-    name: example-jest-unit-tests
-    runs-on: ubuntu-latest
+    name: unit (${{ matrix.os }}, shard ${{ matrix.shard }}/2)
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04]
+        shard: [1, 2]
+    env:
+      SMART_TEST_GITHUB_ACTIONS_MATRIX: ${{ toJSON(matrix) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           cache: npm
           node-version-file: .nvmrc
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: '3.13'
 
       - name: Install Smart Tests CLI
         run: pip install smart-tests-cli
@@ -37,16 +43,17 @@ jobs:
           smart-tests verify
           npx vitest list --filesOnly > all-unit.txt
           echo "--- candidates ---"; cat all-unit.txt
-          smart-tests subset --from-github-actions --target 50% vitest \
+          smart-tests subset --from-github-actions --target 50% \
+            --bin ${{ matrix.shard }}/2 vitest \
             < all-unit.txt > subset-unit.txt
-          echo "--- selected ---"; cat subset-unit.txt
+          echo "--- selected (bin ${{ matrix.shard }}/2) ---"; cat subset-unit.txt
 
       - name: Run selected unit tests
         run: |
           if [ ! -s subset-unit.txt ]; then
-            echo "Empty subset - nothing to run"; exit 0
+            echo "Empty bin - nothing to run"; exit 0
           fi
-          npx vitest run $(cat subset-unit.txt)
+          npm run test:unit -- $(cat subset-unit.txt)
 
       - name: Store Test Results for Smart Tests
         if: always()
@@ -55,19 +62,27 @@ jobs:
           files: test-results/vitest-junit.xml
 
   example-playwright-e2e-tests:
-    name: example-playwright-e2e-tests
-    runs-on: ubuntu-latest
+    name: e2e (${{ matrix.os }}, shard ${{ matrix.shard }}/2)
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04]
+        shard: [1, 2]
+    env:
+      SMART_TEST_GITHUB_ACTIONS_MATRIX: ${{ toJSON(matrix) }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           cache: npm
           node-version-file: .nvmrc
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: '3.13'
 
       - name: Install Smart Tests CLI
         run: pip install smart-tests-cli
@@ -83,19 +98,21 @@ jobs:
           smart-tests verify
           find e2e -maxdepth 1 -name '*.spec.ts' | sort > all-e2e.txt
           echo "--- candidates ---"; cat all-e2e.txt
-          smart-tests subset --from-github-actions --target 50% playwright \
+          smart-tests subset --from-github-actions --target 50% \
+            --bin ${{ matrix.shard }}/2 playwright \
             < all-e2e.txt > subset-e2e.txt
-          echo "--- selected ---"; cat subset-e2e.txt
+          echo "--- selected (bin ${{ matrix.shard }}/2) ---"; cat subset-e2e.txt
 
       - name: Run selected e2e tests
         run: |
           if [ ! -s subset-e2e.txt ]; then
-            echo "Empty subset - nothing to run"; exit 0
+            echo "Empty bin - nothing to run"; exit 0
           fi
-          npx playwright test $(cat subset-e2e.txt)
+          npm run test:e2e -- $(cat subset-e2e.txt)
 
       - name: Store Test Results for Smart Tests
         if: always()
         uses: cloudbees-oss/smart-tests-results-upload-action@v1
         with:
           files: test-results/playwright-junit.xml
+          
