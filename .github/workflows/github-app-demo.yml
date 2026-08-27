@@ -96,7 +96,7 @@ jobs:
       - name: Subset e2e tests
         run: |
           smart-tests verify
-          find e2e -maxdepth 1 -name '*.spec.ts' | sort > all-e2e.txt
+          find e2e -maxdepth 1 -name '*.spec.ts' | sed 's|^e2e/||' | sort > all-e2e.txt
           echo "--- candidates ---"; cat all-e2e.txt
           smart-tests subset --from-github-actions --target 50% \
             --bin ${{ matrix.shard }}/2 playwright \
@@ -115,4 +115,3 @@ jobs:
         uses: cloudbees-oss/smart-tests-results-upload-action@v1
         with:
           files: test-results/playwright-junit.xml
-          
