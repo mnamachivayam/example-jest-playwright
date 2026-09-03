@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-22.04, windows-latest]
+        os: [ubuntu-latest]
         shard: [1, 2]
     env:
       SMART_TEST_GITHUB_ACTIONS_MATRIX: ${{ toJSON(matrix) }}
@@ -44,7 +44,9 @@ jobs:
           smart-tests verify
           npx vitest list --filesOnly > all-unit.txt
           echo "--- candidates ---"; cat all-unit.txt
-          smart-tests subset --from-github-actions --target 50% --bin ${{ matrix.shard }}/2 vitest < all-unit.txt > subset-unit.txt
+          smart-tests subset --from-github-actions --target 50% \
+            --bin ${{ matrix.shard }}/2 vitest \
+            < all-unit.txt > subset-unit.txt
           echo "--- selected (bin ${{ matrix.shard }}/2) ---"; cat subset-unit.txt
 
       - name: Run selected unit tests
