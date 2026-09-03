@@ -44,9 +44,7 @@ jobs:
           smart-tests verify
           npx vitest list --filesOnly > all-unit.txt
           echo "--- candidates ---"; cat all-unit.txt
-          smart-tests subset --from-github-actions --target 50% \
-            --bin ${{ matrix.shard }}/2 vitest \
-            < all-unit.txt > subset-unit.txt
+          smart-tests subset --from-github-actions --target 50% --bin ${{ matrix.shard }}/2 vitest < all-unit.txt > subset-unit.txt
           echo "--- selected (bin ${{ matrix.shard }}/2) ---"; cat subset-unit.txt
 
       - name: Run selected unit tests
