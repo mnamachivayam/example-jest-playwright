@@ -3,6 +3,7 @@ name: Smart Tests Demo
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 env:
   SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_TOKEN }}
