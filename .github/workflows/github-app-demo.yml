@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_LOCAL_TOKEN }} # ${{ secrets.SMART_TESTS_TOKEN }}
+  SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_TOKEN }} # ${{ secrets.SMART_TESTS_LOCAL_TOKEN }}
   SMART_TESTS_REPORT_ERROR: 1
 
 jobs:
