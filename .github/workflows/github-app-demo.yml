@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_TOKEN }}
+  SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_LOCAL_TOKEN }}
   SMART_TESTS_REPORT_ERROR: 1
 
 jobs:
@@ -69,7 +69,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-22.04]
+        os: [ubuntu-latest]
         shard: [1, 2]
     env:
       SMART_TEST_GITHUB_ACTIONS_MATRIX: ${{ toJSON(matrix) }}
