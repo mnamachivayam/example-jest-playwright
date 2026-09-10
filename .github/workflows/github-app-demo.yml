@@ -27,9 +27,29 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install Smart Tests CLI
+        run: pip install smart-tests-cli
+
+
+      - name: Subset unit tests
         run: |
-          npm run test:unit
+          smart-tests verify
+          npx vitest list --filesOnly > all-unit.txt
+          echo "--- candidates ---"; cat all-unit.txt
+          smart-tests subset --from-github-actions --target 50% vitest \
+            < all-unit.txt > subset-unit.txt
+          echo "--- selected ---"; cat subset-unit.txt
+
+      - name: Run selected unit tests
+        run: |
+          if [ ! -s subset-unit.txt ]; then
+            echo "Empty subset - nothing to run"; exit 0
+          fi
+          npm run test:unit -- $(cat subset-unit.txt)
 
       - name: Store Test Results for Smart Tests
         if: always()
