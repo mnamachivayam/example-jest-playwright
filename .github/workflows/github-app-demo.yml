@@ -5,10 +5,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-env:
-  SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_TOKEN }}
-  SMART_TESTS_REPORT_ERROR: 1
-
 jobs:
   example-jest-unit-tests:
     name: unit tests
@@ -30,7 +26,3 @@ jobs:
       - name: Run unit tests
         run: |
           npm run test:unit
-
-      - name: Store Test Results for Smart Tests
-        if: always()
-        uses: cloudbees-oss/smart-tests-results-upload-action@v1
