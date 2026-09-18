@@ -7,7 +7,7 @@ on:
 
 env:
   SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_LOCAL_TOKEN }} # ${{ secrets.SMART_TESTS_TOKEN }}
-  SMART_TESTS_BASE_URL: https://battering-chummy-mooned.ngrok-free.dev
+  SMART_TESTS_BASE_URL: ${{ secrets.SMART_TESTS_BASE_URL }}
   SMART_TESTS_REPORT_ERROR: 1
 
 jobs:
