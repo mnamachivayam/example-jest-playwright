@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  SMART_TESTS_TOKEN: ${{ secrets.SMART_TESTS_LOCAL_TOKEN }}
+  SMART_TESTS_BASE_URL: ${{ secrets.SMART_TESTS_BASE_URL }}
+
 jobs:
   example-jest-unit-tests:
     name: unit tests
