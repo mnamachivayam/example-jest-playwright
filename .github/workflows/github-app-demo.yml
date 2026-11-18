@@ -38,7 +38,7 @@ jobs:
       - name: Subset unit tests
         run: |
           smart-tests verify
-          npx vitest list --filesOnly > all-unit.txt
+          npx vitest list --config vitest.smart-patterns.config.ts --filesOnly > all-unit.txt
           echo "--- candidates ---"; cat all-unit.txt
           smart-tests subset --from-github-actions --target 50% vitest \
             < all-unit.txt > subset-unit.txt
